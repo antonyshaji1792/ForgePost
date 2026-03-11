@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Post - Forge Post</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --accent-color: #ec4899;
+            --dark-bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            background-image:
+                radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 1) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 1) 0, transparent 50%);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+        }
+
+        .glass-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-control,
+        .form-select {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary-gradient {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .platform-checkbox {
+            display: none;
+        }
+
+        .platform-label {
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .platform-checkbox:checked+.platform-label {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+        }
+
+        .platform-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Custom colors for platform icons in the label */
+        .text-pink {
+            color: #d62976;
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg glass-panel mx-3 mt-3 mb-5 px-4">
+        <a class="navbar-brand" href="/"><i class="fas fa-video me-2"></i>Forge Post</a>
+        <div class="ms-auto d-flex align-items-center">
+            <a href="/" class="nav-link text-white me-3"><i class="fas fa-home me-1"></i> Editor</a>
+            <a href="/gallery" class="nav-link text-white me-3"><i class="fas fa-images me-1"></i> Gallery</a>
+            <a href="/social" class="nav-link text-white me-3"><i class="fas fa-share-nodes me-1"></i> Social</a>
+            <a href="/settings" class="nav-link text-white me-3"><i class="fas fa-cog me-1"></i> Settings</a>
+            <span class="text-white me-3"><i class="fas fa-user me-2"></i>{{ user }}</span>
+            <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="glass-panel p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3><i class="fas fa-edit me-2"></i>Edit Post</h3>
+                        <a href="/history" class="btn btn-outline-light btn-sm"><i
+                                class="fas fa-arrow-left me-2"></i>Back to History</a>
+                    </div>
+
+                    <form action="/api/update_post/{{ post.id }}" method="POST" enctype="multipart/form-data">
+
+                        <div class="mb-4">
+                            <label class="form-label text-secondary">Media File</label>
+                            {% set current_filename = post.file_path.split('\\')[-1].split('/')[-1] %}
+                            <select class="form-select" name="filename">
+                                {% for file in files %}
+                                <option value="{{ file }}" {% if file==current_filename %}selected{% endif %}>{{ file }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text text-white-50">Currently selected file: {{ current_filename }}</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-secondary">Platforms</label>
+                            <div class="row g-3">
+                                <div class="col-3">
+                                    <input type="checkbox" class="platform-checkbox" name="platforms" value="youtube"
+                                        id="p-yt" {% if 'youtube' in post.platforms %}checked{% endif %}>
+                                    <label class="platform-label" for="p-yt">
+                                        <i class="fab fa-youtube platform-icon text-danger"></i>
+                                        YouTube
+                                    </label>
+                                </div>
+                                <div class="col-3">
+                                    <input type="checkbox" class="platform-checkbox" name="platforms" value="instagram"
+                                        id="p-ig" {% if 'instagram' in post.platforms %}checked{% endif %}>
+                                    <label class="platform-label" for="p-ig">
+                                        <i class="fab fa-instagram platform-icon text-pink"></i>
+                                        Instagram
+                                    </label>
+                                </div>
+                                <div class="col-3">
+                                    <input type="checkbox" class="platform-checkbox" name="platforms" value="facebook"
+                                        id="p-fb" {% if 'facebook' in post.platforms %}checked{% endif %}>
+                                    <label class="platform-label" for="p-fb">
+                                        <i class="fab fa-facebook platform-icon text-primary"></i>
+                                        Facebook
+                                    </label>
+                                </div>
+                                <div class="col-3">
+                                    <input type="checkbox" class="platform-checkbox" name="platforms" value="twitter"
+                                        id="p-tw" {% if 'twitter' in post.platforms %}checked{% endif %}>
+                                    <label class="platform-label" for="p-tw">
+                                        <i class="fab fa-twitter platform-icon text-info"></i>
+                                        Twitter
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-secondary">Title (Required for YouTube)</label>
+                            <div class="input-group mb-2">
+                                <input type="text" class="form-control" name="title" id="post-title"
+                                    placeholder="Enter video title" value="{{ post.title }}">
+                                <button type="button" class="btn btn-outline-primary" id="ai-generate-btn"
+                                    onclick="generateTitles()">
+                                    <i class="fas fa-magic me-2"></i>AI Auto Generate
+                                </button>
+                            </div>
+                            <div id="ai-title-results" class="d-flex flex-wrap gap-2"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-secondary">Description / Caption</label>
+                            <div class="position-relative">
+                                <textarea class="form-control mb-2" name="caption" id="post-caption" rows="4"
+                                    placeholder="Write something engaging...">{{ post.caption }}</textarea>
+                                <button type="button"
+                                    class="btn btn-outline-primary btn-sm position-absolute top-0 end-0 m-2"
+                                    id="ai-desc-btn" onclick="generateDescription()">
+                                    <i class="fas fa-magic"></i> AI Rewrite
+                                </button>
+                            </div>
+                            <div id="ai-description-results" class="d-flex flex-column gap-2"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-secondary">Hashtags</label>
+                            <input type="text" class="form-control" name="hashtags" placeholder="tag1, tag2, tag3"
+                                value="{{ post.hashtags }}">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-secondary">Schedule (Optional - Leave empty to update to
+                                immediate)</label>
+                            <input type="datetime-local" class="form-control" name="schedule_time"
+                                value="{{ post.schedule_time if post.schedule_time else '' }}">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary-gradient w-100" id="submit-btn">
+                            <i class="fas fa-save me-2"></i>Update Post
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function generateTitles() {
+            const titleInput = document.getElementById('post-title');
+            const originalTitle = titleInput.value;
+            if (!originalTitle) {
+                alert("Please enter a title first");
+                return;
+            }
+
+            const btn = document.getElementById('ai-generate-btn');
+            const resultsDiv = document.getElementById('ai-title-results');
+
+            // Loading state
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
+            resultsDiv.innerHTML = '';
+
+            fetch('/api/generate_titles', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ title: originalTitle })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-magic me-2"></i>AI Auto Generate';
+
+                    if (data.error) {
+                        resultsDiv.innerHTML = `<span class="text-danger small">${data.error}</span>`;
+                        return;
+                    }
+
+                    if (data.titles && data.titles.length > 0) {
+                        data.titles.forEach(title => {
+                            const chip = document.createElement('button');
+                            chip.type = 'button';
+                            chip.className = 'btn btn-sm btn-outline-info rounded-pill';
+                            chip.textContent = title;
+                            chip.onclick = function () {
+                                titleInput.value = title;
+                            };
+                            resultsDiv.appendChild(chip);
+                        });
+                    } else {
+                        resultsDiv.innerHTML = '<span class="text-warning small">No titles generated. Try again.</span>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-magic me-2"></i>AI Auto Generate';
+                    resultsDiv.innerHTML = '<span class="text-danger small">Error generating titles</span>';
+                });
+        }
+
+        function generateDescription() {
+            const titleInput = document.getElementById('post-title');
+            const descInput = document.getElementById('post-caption');
+            const btn = document.getElementById('ai-desc-btn');
+            const resultsDiv = document.getElementById('ai-description-results');
+
+            const title = titleInput.value;
+            const description = descInput.value;
+
+            if (!title && !description) {
+                alert("Please enter a title or some description first");
+                return;
+            }
+
+            // Loading state
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            resultsDiv.innerHTML = '';
+
+            fetch('/api/generate_description', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ title: title, description: description })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-magic"></i> AI Rewrite';
+
+                    if (data.error) {
+                        resultsDiv.innerHTML = `<span class="text-danger small">${data.error}</span>`;
+                        return;
+                    }
+
+                    if (data.descriptions && data.descriptions.length > 0) {
+                        data.descriptions.forEach(desc => {
+                            const card = document.createElement('div');
+                            card.className = 'card bg-dark border-secondary mb-1 cursor-pointer';
+                            card.style.cursor = 'pointer';
+                            card.innerHTML = `<div class="card-body p-2 small text-light">${desc}</div>`;
+                            card.onclick = function () {
+                                descInput.value = desc;
+                                // Clear suggestions after selection
+                                resultsDiv.innerHTML = '';
+                            };
+                            resultsDiv.appendChild(card);
+                        });
+                        const clearBtn = document.createElement('small');
+                        clearBtn.className = 'text-muted text-end d-block mt-1 cursor-pointer';
+                        clearBtn.style.cursor = 'pointer';
+                        clearBtn.textContent = 'Clear suggestions';
+                        clearBtn.onclick = () => resultsDiv.innerHTML = '';
+                        resultsDiv.appendChild(clearBtn);
+                    } else {
+                        resultsDiv.innerHTML = '<span class="text-warning small">No descriptions generated. Try again.</span>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-magic"></i> AI Rewrite';
+                    resultsDiv.innerHTML = '<span class="text-danger small">Error generating description</span>';
+                });
+        }
+    </script>
+</body>
+
+</html>

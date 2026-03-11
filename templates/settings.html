@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Forge Post</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --accent-color: #ec4899;
+            --dark-bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            background-image:
+                radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 1) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 1) 0, transparent 50%);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+        }
+
+        .glass-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-control {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .form-control:focus {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary-gradient {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-primary-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+            color: white;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: black !important;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg glass-panel mx-3 mt-3 mb-5 px-4">
+        <a class="navbar-brand" href="/"><i class="fas fa-video me-2"></i>Forge Post</a>
+        <div class="ms-auto d-flex align-items-center">
+            <a href="/" class="nav-link text-white me-3"><i class="fas fa-home me-1"></i> Editor</a>
+            <a href="/gallery" class="nav-link text-white me-3"><i class="fas fa-images me-1"></i> Gallery</a>
+            <a href="/social" class="nav-link text-white me-3"><i class="fas fa-share-nodes me-1"></i> Social</a>
+            <a href="/history" class="nav-link text-white me-3"><i class="fas fa-history me-1"></i> History</a>
+            <a href="/settings" class="nav-link text-white me-3"><i class="fas fa-cog me-1"></i> Settings</a>
+            <span class="text-white me-3"><i class="fas fa-user me-2"></i>{{ user }}</span>
+            <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="glass-panel p-4 p-md-5">
+                    <h3 class="mb-4">User Settings</h3>
+
+                    {% if message %}
+                    <div class="alert alert-success mb-4" role="alert">
+                        {{ message }}
+                    </div>
+                    {% endif %}
+
+                    <form action="/settings" method="POST">
+                        <ul class="nav nav-tabs mb-4 border-secondary" id="settingsTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active text-white" id="social-tab" data-bs-toggle="tab"
+                                    data-bs-target="#social" type="button" role="tab">Social Media</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link text-white" id="llm-tab" data-bs-toggle="tab"
+                                    data-bs-target="#llm" type="button" role="tab">LLM APIs</button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="settingsTabContent">
+                            <!-- Social Media Tab -->
+                            <div class="tab-pane fade show active" id="social" role="tabpanel">
+                                <h5 class="mb-3 text-secondary">Social Media Credentials</h5>
+
+                                <div class="mb-4">
+                                    <label class="form-label text-secondary"><i class="fab fa-youtube me-2"></i>YouTube
+                                        API Key</label>
+                                    <input type="text" class="form-control" name="youtube_api"
+                                        value="{{ settings.youtube_api | default('') }}">
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label text-secondary"><i class="fab fa-youtube me-2"></i>YouTube
+                                        Channel ID</label>
+                                    <input type="text" class="form-control" name="youtube_channel_id"
+                                        value="{{ settings.youtube_channel_id | default('') }}" placeholder="UC...">
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label text-secondary"><i
+                                            class="fab fa-instagram me-2"></i>Instagram Username</label>
+                                    <input type="text" class="form-control" name="instagram_username"
+                                        value="{{ settings.instagram_username | default('') }}" placeholder="username">
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label text-secondary"><i
+                                            class="fab fa-instagram me-2"></i>Instagram Password</label>
+                                    <input type="password" class="form-control" name="instagram_password"
+                                        value="{{ settings.instagram_password | default('') }}" placeholder="password">
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label text-secondary"><i
+                                            class="fab fa-facebook me-2"></i>Facebook Page ID</label>
+                                    <input type="text" class="form-control" name="facebook_page_id"
+                                        value="{{ settings.facebook_page_id | default('') }}"
+                                        placeholder="123456789...">
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label text-secondary"><i
+                                            class="fab fa-facebook me-2"></i>Facebook Page Access Token</label>
+                                    <input type="text" class="form-control" name="facebook_api"
+                                        value="{{ settings.facebook_api | default('') }}">
+                                </div>
+
+                                <div class="mb-4">
+                                    <h6 class="text-secondary border-bottom border-secondary pb-2 mb-3"><i
+                                            class="fab fa-twitter me-2"></i>Twitter (X) Configuration</h6>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label text-secondary small">API Key (Consumer
+                                                Key)</label>
+                                            <input type="text" class="form-control" name="twitter_api_key"
+                                                value="{{ settings.twitter_api_key | default('') }}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label text-secondary small">API Secret (Consumer
+                                                Secret)</label>
+                                            <input type="password" class="form-control" name="twitter_api_secret"
+                                                value="{{ settings.twitter_api_secret | default('') }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label text-secondary small">Access Token</label>
+                                            <input type="text" class="form-control" name="twitter_access_token"
+                                                value="{{ settings.twitter_access_token | default('') }}">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label text-secondary small">Access Token Secret</label>
+                                            <input type="password" class="form-control" name="twitter_access_secret"
+                                                value="{{ settings.twitter_access_secret | default('') }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h6 class="text-secondary border-bottom border-secondary pb-2 mb-3"><i
+                                            class="fab fa-linkedin me-2"></i>LinkedIn Configuration</h6>
+
+                                    <div class="mb-3">
+                                        <label class="form-label text-secondary small">Access Token</label>
+                                        <input type="password" class="form-control" name="linkedin_access_token"
+                                            value="{{ settings.linkedin_access_token | default('') }}">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label text-secondary small">Person URN (Author ID)</label>
+                                        <input type="text" class="form-control" name="linkedin_person_urn"
+                                            value="{{ settings.linkedin_person_urn | default('') }}"
+                                            placeholder="urn:li:person:12345...">
+                                        <small class="text-muted">For posting as your personal profile</small>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label text-secondary small">Organization URN (Company Page ID)</label>
+                                        <input type="text" class="form-control" name="linkedin_organization_urn"
+                                            value="{{ settings.linkedin_organization_urn | default('') }}"
+                                            placeholder="urn:li:organization:67890...">
+                                        <small class="text-muted">For posting as a company page (leave blank to use Person URN)</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- LLM Tab -->
+                            <div class="tab-pane fade" id="llm" role="tabpanel">
+                                <h5 class="mb-3 text-secondary">LLM API Configuration</h5>
+                                <p class="text-secondary small mb-4">Enter API keys for major Large Language Model
+                                    providers.</p>
+
+                                {% for provider in ['OpenRouter', 'OpenAI', 'Anthropic', 'Google', 'Mistral', 'Cohere',
+                                'HuggingFace', 'Groq', 'Perplexity', 'Together', 'DeepSeek'] %}
+                                <div class="card bg-transparent border-secondary mb-3">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h6 class="text-white mb-0">{{ provider }}</h6>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" role="switch"
+                                                    id="{{ provider.lower() }}_active"
+                                                    name="{{ provider.lower() }}_active" {% if settings[provider.lower()
+                                                    + '_active' ]=='on' %}checked{% endif %}>
+                                                <label class="form-check-label text-secondary small"
+                                                    for="{{ provider.lower() }}_active">Active</label>
+                                            </div>
+                                        </div>
+                                        {% set key_name = provider.lower() + '_api' %}
+                                        {% set model_name = provider.lower() + '_model' %}
+                                        <div class="row g-3">
+                                            <div class="col-md-8">
+                                                <label class="form-label text-secondary small">API Key</label>
+                                                <input type="text" class="form-control form-control-sm"
+                                                    name="{{ key_name }}" value="{{ settings[key_name] | default('') }}"
+                                                    placeholder="sk-...">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label text-secondary small">Default Model</label>
+                                                <input type="text" class="form-control form-control-sm"
+                                                    name="{{ model_name }}"
+                                                    value="{{ settings[model_name] | default('') }}"
+                                                    placeholder="e.g. gpt-4">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary-gradient">
+                                <i class="fas fa-save me-2"></i>Save All Settings
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

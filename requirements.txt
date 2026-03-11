@@ -1,0 +1,4 @@
+flask
+moviepy
+werkzeug
+edge-tts

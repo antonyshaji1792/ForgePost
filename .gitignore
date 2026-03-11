@@ -1,0 +1,48 @@
+# User data & credentials
+users.csv
+user_settings.json
+client_secrets.json
+credentials.pickle
+*.pickle
+*session*.json
+insta_session_*.json
+
+# Runtime data files
+jobs.json
+scheduled_posts.json
+
+# Uploaded & processed media
+uploads/
+outputs/
+
+# Log files
+*.log
+startup_debug.txt
+startup_log.txt
+tts_debug.log
+tts_debug_sim.log
+
+# Sample/test media files
+*.mp4
+*.mp3
+*.wav
+*.aac
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+.env
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

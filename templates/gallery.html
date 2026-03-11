@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forge Post - Gallery</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --accent-color: #ec4899;
+            --dark-bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            background-image:
+                radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 1) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 1) 0, transparent 50%);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+        }
+
+        .glass-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        .media-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .media-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        video,
+        audio {
+            width: 100%;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .btn-download {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .btn-download:hover {
+            background: var(--primary-color);
+        }
+
+        .nav-link {
+            color: var(--text-main);
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg glass-panel mx-3 mt-3 mb-5 px-4">
+        <a class="navbar-brand" href="/"><i class="fas fa-video me-2"></i>Forge Post</a>
+        <div class="ms-auto d-flex align-items-center">
+            <a href="/" class="nav-link text-white me-3"><i class="fas fa-home me-1"></i> Editor</a>
+            <a href="/gallery" class="nav-link text-white me-3"><i class="fas fa-images me-1"></i> Gallery</a>
+            <a href="/social" class="nav-link text-white me-3"><i class="fas fa-share-nodes me-1"></i> Social</a>
+            <a href="/history" class="nav-link text-white me-3"><i class="fas fa-history me-1"></i> History</a>
+            <a href="/settings" class="nav-link text-white me-3"><i class="fas fa-cog me-1"></i> Settings</a>
+            <span class="text-white me-3"><i class="fas fa-user me-2"></i>{{ user }}</span>
+            <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container pb-5">
+        <h1 class="display-4 mb-4 fw-bold text-center">Your Gallery</h1>
+
+        {% for category, files in categories.items() %}
+        {% set cat_index = loop.index %}
+        {% if files %}
+        <div class="category-section animate-fade mb-5">
+            <div class="d-flex justify-content-between align-items-end border-bottom mb-3 pb-2"
+                style="border-color: rgba(255,255,255,0.1) !important;">
+                <h3 class="m-0 text-primary section-title border-0 p-0 m-0"><i class="fas fa-folder-open me-2"></i>{{
+                    category }}</h3>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="form-check m-0">
+                        <input class="form-check-input select-all-checkbox" type="checkbox"
+                            data-category="cat-{{ cat_index }}" id="select-all-{{ cat_index }}"
+                            style="cursor: pointer;">
+                        <label class="form-check-label text-secondary small" for="select-all-{{ cat_index }}"
+                            style="cursor: pointer; user-select: none;">Select All</label>
+                    </div>
+                    <button class="btn btn-danger btn-sm delete-bulk-btn opacity-50" data-category="cat-{{ cat_index }}"
+                        disabled onclick="deleteBulk('cat-{{ cat_index }}')">
+                        <i class="fas fa-trash-alt me-2"></i>Delete Selected <span
+                            class="badge bg-white text-danger ms-1 count-badge d-none">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="row g-4" id="container-cat-{{ cat_index }}">
+                {% for file in files %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="media-card position-relative h-100">
+                        <div class="position-absolute top-0 start-0 p-3" style="z-index: 10;">
+                            <input class="form-check-input file-checkbox shadow" type="checkbox" value="{{ file }}"
+                                data-category="cat-{{ cat_index }}"
+                                style="width: 1.3em; height: 1.3em; cursor: pointer; border: 2px solid rgba(255,255,255,0.5);">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title ps-4 ms-2" title="{{ file }}">{{ file }}</h5>
+                            <div class="media-container mb-3">
+                                {% if file.endswith('.mp4') or file.endswith('.mov') or file.endswith('.mkv') %}
+                                <video controls loading="lazy" preload="metadata">
+                                    <source src="{{ url_for('output_file', filename=file) }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                                {% else %}
+                                <audio controls class="w-100 mt-2">
+                                    <source src="{{ url_for('output_file', filename=file) }}">
+                                    Your browser does not support the audio tag.
+                                </audio>
+                                {% endif %}
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('output_file', filename=file) }}" download
+                                    class="btn btn-download flex-grow-1">
+                                    <i class="fas fa-download me-2"></i>Download
+                                </a>
+                                <button onclick="deleteFile('{{ file }}')" class="btn btn-danger"
+                                    style="width: auto; padding: 8px 12px; border-radius: 6px;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+
+        {% if not has_files %}
+        <div class="text-center py-5 text-secondary">
+            <i class="fas fa-box-open fa-3x mb-3"></i>
+            <p class="fs-4">No files found yet.</p>
+            <a href="/" class="btn btn-outline-light mt-2">Start Creating</a>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        async function deleteFile(filename) {
+            if (!confirm(`Are you sure you want to delete "${filename}"?`)) return;
+
+            try {
+                const res = await fetch(`/delete/${filename}`, { method: 'POST' });
+                const data = await res.json();
+
+                if (data.success) {
+                    // Reload page to update gallery
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (e) {
+                console.error(e);
+                alert('An error occurred while deleting the file.');
+            }
+        }
+
+        // Bulk Selection Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            // Select All handler
+            document.querySelectorAll('.select-all-checkbox').forEach(selectAll => {
+                selectAll.addEventListener('change', function () {
+                    const category = this.dataset.category;
+                    const isChecked = this.checked;
+
+                    document.querySelectorAll(`.file-checkbox[data-category="${category}"]`).forEach(cb => {
+                        cb.checked = isChecked;
+                    });
+                    updateBulkButton(category);
+                });
+            });
+
+            // Individual checkbox handler
+            document.querySelectorAll('.file-checkbox').forEach(cb => {
+                cb.addEventListener('change', function () {
+                    const category = this.dataset.category;
+                    const allCheckboxes = document.querySelectorAll(`.file-checkbox[data-category="${category}"]`);
+                    const allChecked = Array.from(allCheckboxes).every(c => c.checked);
+
+                    const selectAll = document.querySelector(`.select-all-checkbox[data-category="${category}"]`);
+                    if (selectAll) selectAll.checked = allChecked;
+                    updateBulkButton(category);
+                });
+            });
+        });
+
+        function updateBulkButton(category) {
+            const checkedBoxes = document.querySelectorAll(`.file-checkbox[data-category="${category}"]:checked`);
+            const count = checkedBoxes.length;
+            const btn = document.querySelector(`.delete-bulk-btn[data-category="${category}"]`);
+            if (!btn) return;
+
+            const countBadge = btn.querySelector('.count-badge');
+
+            if (count > 0) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+                if (countBadge) {
+                    countBadge.textContent = count;
+                    countBadge.classList.remove('d-none');
+                }
+            } else {
+                btn.disabled = true;
+                btn.classList.add('opacity-50');
+                if (countBadge) countBadge.classList.add('d-none');
+            }
+        }
+
+        async function deleteBulk(category) {
+            const checkedBoxes = document.querySelectorAll(`.file-checkbox[data-category="${category}"]:checked`);
+            const filenames = Array.from(checkedBoxes).map(cb => cb.value);
+
+            if (filenames.length === 0) return;
+
+            if (!confirm(`Are you sure you want to delete ${filenames.length} selected files?`)) return;
+
+            const btn = document.querySelector(`.delete-bulk-btn[data-category="${category}"]`);
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Deleting...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/delete_bulk', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filenames: filenames })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    if (data.errors && data.errors.length > 0) {
+                        alert(`Deleted ${data.deleted_count} files with some errors:\n${data.errors.join('\n')}`);
+                    }
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                console.error(e);
+                alert('An error occurred while processing bulk deletion.');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>
