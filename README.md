@@ -93,7 +93,11 @@
 
 ## Screenshots
 
-> Coming soon — feel free to contribute screenshots!
+<img width="1883" height="906" alt="image" src="https://github.com/user-attachments/assets/06953539-bdaf-467d-9a0a-bc9936b1a4ee" />
+
+<img width="1899" height="887" alt="image" src="https://github.com/user-attachments/assets/df4c9384-414b-4a7b-a228-02e052f017aa" />
+
+
 
 ---
 
